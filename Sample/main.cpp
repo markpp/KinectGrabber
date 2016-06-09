@@ -5,8 +5,14 @@
 
 #include "kinect2_grabber.h"
 #include <pcl/visualization/pcl_visualizer.h>
+#include <memory>
 
 typedef pcl::PointXYZRGBA PointType;
+
+void keyboardEventOccurred(const pcl::visualization::KeyboardEvent &event);
+
+//Global point for keyboard
+boost::shared_ptr<pcl::Grabber> grabber;
 
 int main( int argc, char* argv[] )
 {
@@ -23,17 +29,19 @@ int main( int argc, char* argv[] )
     boost::function<void( const pcl::PointCloud<PointType>::ConstPtr& )> function =
         [&cloud, &mutex]( const pcl::PointCloud<PointType>::ConstPtr& ptr ){
             boost::mutex::scoped_lock lock( mutex );
-            cloud = ptr;
+            cloud = ptr;		
         };
 
     // Kinect2Grabber
-    boost::shared_ptr<pcl::Grabber> grabber = boost::make_shared<pcl::Kinect2Grabber>();
+    grabber = boost::make_shared<pcl::Kinect2Grabber>();
 
     // Register Callback Function
     boost::signals2::connection connection = grabber->registerCallback( function );
 
     // Start Grabber
     grabber->start();
+
+	viewer->registerKeyboardCallback(keyboardEventOccurred);
 
     while( !viewer->wasStopped() ){
         // Update Viewer
@@ -61,4 +69,18 @@ int main( int argc, char* argv[] )
     }
 
     return 0;
+}
+
+void keyboardEventOccurred(const pcl::visualization::KeyboardEvent &event)
+{
+	if (event.getKeySym() == "c" && event.keyDown())
+	{
+		std::cout << "c was pressed => recording frames" << std::endl;
+		boost::shared_ptr<pcl::Kinect2Grabber> p = boost::dynamic_pointer_cast<pcl::Kinect2Grabber, pcl::Grabber>(grabber);
+		if (p != nullptr)
+		{
+			// It is safe to dereference p
+			p->toggleRecord();
+		}
+	}
 }
