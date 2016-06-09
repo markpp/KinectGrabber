@@ -321,8 +321,8 @@ namespace pcl
 	void pcl::Kinect2Grabber::threadFunction()
 	{
 		//OpenCV vars
-		int width = 512;
-		int height = 424;
+		//int width = 512;
+		//int height = 424;
 		std::ostringstream os;
 		size_t imageCount_ = 0;
 		ColorSpacePoint* depth2rgb = new ColorSpacePoint[512 * 424];     // Maps depth pixels to rgb pixels
@@ -343,9 +343,6 @@ namespace pcl
 				}
 				else if (record)	//Save images to disk with opencv
 				{
-					//create rectification map for color
-					//mapper->MapDepthFrameToColorSpace(512 * 424, &depthBuffer[0], 512 * 424, depth2rgb);
-					//mapper->MapColorFrameToCameraSpace(512 * 424, &depthBuffer[0], 1920 * 1080, camerapoints);
 					mapper->MapColorFrameToDepthSpace(512 * 424, &depthBuffer[0], 1920 * 1080, color2depth);
 					//CameraIntrinsics	test;
 					//mapper->GetDepthCameraIntrinsics(&test);
@@ -353,8 +350,7 @@ namespace pcl
 					os.str("");
 					os.clear();
 					os << "out//depth//img_" << std::setw(4) << std::setfill('0') << imageCount_ << ".png";
-					cv::Mat bufferMat(height, width, CV_16UC1);
-					bufferMat = cv::Mat(height, width, CV_16UC1, &depthBuffer[0]);	//copy data into buffer Mat
+					cv::Mat bufferMat = cv::Mat(depthHeight, depthWidth, CV_16UC1, &depthBuffer[0]);	//copy data into buffer Mat
 					cv::imwrite(os.str(), bufferMat);	//This saves the 16 bits per channel grey scale image
 				}
 			}
@@ -386,28 +382,9 @@ namespace pcl
 							rect_color.at<cv::Vec3b>(p.Y, p.X)[2] = colorBuffer[i].rgbRed;
 						}
 					}
-					//for (it = rect_color.begin<cv::Vec3b>(), end = rect_color.end<cv::Vec3b>(); it != end; ++it)
-					//{
-					//	DepthSpacePoint p = color2depth[counter];
-					//	// Check if color pixel coordinates are in bounds
-					//	if (p.X < 0 || p.Y < 0 || p.X > 1920 || p.Y > 1080) {
-					//		(*it)[0] = 0;
-					//		(*it)[1] = 0;
-					//		(*it)[2] = 0;
-					//	}
-					//	else {
-					//		int idx = (int)p.X + 1920*(int)p.Y;	//Get corresponding color pixel
-					//		(*it)[0] = colorBuffer[idx].rgbBlue;	//copy RGB channels to MAT.
-					//		(*it)[1] = colorBuffer[idx].rgbGreen;
-					//		(*it)[2] = colorBuffer[idx].rgbRed;
-					//	}
-					//	counter++;
-					//}
 					os.str("");
 					os.clear();
 					os << "out//rect_color//img_" << std::setw(4) << std::setfill('0') << imageCount_ << ".png";
-					//cv::Mat bufferMat(cheight, cwidth, CV_8UC4);
-					//bufferMat = cv::Mat(cheight, cwidth, CV_8UC4, reinterpret_cast<void*>(&colorBuffer[0]));	//copy data into buffer Mat
 					cv::imwrite(os.str(), rect_color);	//Save RGB Color 8bbp
 				}
 			}

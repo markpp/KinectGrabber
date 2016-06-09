@@ -6,6 +6,7 @@
 #include "kinect2_grabber.h"
 #include <pcl/visualization/pcl_visualizer.h>
 #include <memory>
+#include <Windows.h>
 
 typedef pcl::PointXYZRGBA PointType;
 
@@ -75,12 +76,26 @@ void keyboardEventOccurred(const pcl::visualization::KeyboardEvent &event)
 {
 	if (event.getKeySym() == "c" && event.keyDown())
 	{
-		std::cout << "c was pressed => recording frames" << std::endl;
+		std::cout << "c was pressed => toggling recording frames" << std::endl;
 		boost::shared_ptr<pcl::Kinect2Grabber> p = boost::dynamic_pointer_cast<pcl::Kinect2Grabber, pcl::Grabber>(grabber);
 		if (p != nullptr)
 		{
 			// It is safe to dereference p
 			p->toggleRecord();
 		}
+	}
+	if (event.getKeyCode() == 'd' || event.getKeyCode() == 'd')
+	{
+		//Delete folder contents
+		pcl::console::print_info("Deleting ALL output files\n");
+		SHFILEOPSTRUCTW op = { 0 };
+		op.wFunc = FO_DELETE;
+		op.fFlags = FOF_FILESONLY | FOF_SILENT | FOF_NOCONFIRMATION | FOF_NOERRORUI;
+		op.pFrom = L"out\\rect_color\\*.*\0";
+		SHFileOperationW(&op);
+		op.pFrom = L"out\\depth\\*.*\0";
+		SHFileOperationW(&op);
+		op.pFrom = L"out\\clouds\\*.*\0";
+		SHFileOperationW(&op);
 	}
 }
