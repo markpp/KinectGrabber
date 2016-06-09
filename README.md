@@ -1,4 +1,4 @@
-﻿Kinect2Grabber
+﻿Kinect2Grabber Exporter (Modified to export RGB, DEPTH, and PCD files for statistical analysis)
 ==============
 
 [![Gittip](http://img.shields.io/gratipay/TsukasaSugiura.svg)](https://gratipay.com/TsukasaSugiura/)  
