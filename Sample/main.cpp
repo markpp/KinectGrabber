@@ -30,7 +30,7 @@ int main( int argc, char* argv[] )
     boost::function<void( const pcl::PointCloud<PointType>::ConstPtr& )> function =
         [&cloud, &mutex]( const pcl::PointCloud<PointType>::ConstPtr& ptr ){
             boost::mutex::scoped_lock lock( mutex );
-            cloud = ptr;		
+            cloud = ptr;
         };
 
     // Kinect2Grabber
@@ -42,7 +42,7 @@ int main( int argc, char* argv[] )
     // Start Grabber
     grabber->start();
 
-	viewer->registerKeyboardCallback(keyboardEventOccurred);
+	  viewer->registerKeyboardCallback(keyboardEventOccurred);
 
     while( !viewer->wasStopped() ){
         // Update Viewer
@@ -63,7 +63,7 @@ int main( int argc, char* argv[] )
 
     // Stop Grabber
     grabber->stop();
-    
+
     // Disconnect Callback Function
     if( connection.connected() ){
         connection.disconnect();
@@ -97,5 +97,7 @@ void keyboardEventOccurred(const pcl::visualization::KeyboardEvent &event)
 		SHFileOperationW(&op);
 		op.pFrom = L"out\\clouds\\*.*\0";
 		SHFileOperationW(&op);
+    op.pFrom = L"out\\color\\*.*\0";
+    SHFileOperationW(&op);
 	}
 }

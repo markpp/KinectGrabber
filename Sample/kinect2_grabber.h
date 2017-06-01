@@ -323,7 +323,7 @@ namespace pcl
 		//OpenCV vars
 		//int width = 512;
 		//int height = 424;
-		std::ostringstream os;
+		std::ostringstream os, os_c;
 		size_t imageCount_ = 0;
 		ColorSpacePoint* depth2rgb = new ColorSpacePoint[512 * 424];     // Maps depth pixels to rgb pixels
 		DepthSpacePoint* color2depth = new DepthSpacePoint[1920 * 1080];
@@ -343,6 +343,8 @@ namespace pcl
 				}
 				else if (record)	//Save images to disk with opencv
 				{
+
+
 					mapper->MapColorFrameToDepthSpace(512 * 424, &depthBuffer[0], 1920 * 1080, color2depth);
 					//CameraIntrinsics	test;
 					//mapper->GetDepthCameraIntrinsics(&test);
@@ -369,12 +371,21 @@ namespace pcl
 				}
 				else if (record)	//Save images to disk with opencv
 				{
+          //cv::Mat colorImage;
+          //cv::Mat colorImage(1080, 1920, CV_8UC4);
+          //cvtColor(colorBuffer, colorImage, CV_BGRA2BGR);
+          //os.str("");
+          //os.clear();
+          //os << "out//color//img_" << std::setw(4) << std::setfill('0') << imageCount_ << ".png";
+          //cv::imwrite("test.png", colorImage);	//Save RGB Color 8bbp
+
 					//Remap full res color to depth matched color
 					cv::Mat rect_color = cv::Mat(424, 512, CV_8UC3);
 					cv::MatIterator_<cv::Vec3b> it, end;
 					//size_t	counter = 0;
 					for (size_t i = 0; i < colorBuffer.size(); i++)
 					{
+
 						DepthSpacePoint p = color2depth[i];
 						if (!(p.X < 0 || p.Y < 0 || p.X > 512 || p.Y > 424)) {	//check it is within depth bounds
 							rect_color.at<cv::Vec3b>(p.Y, p.X)[0] = colorBuffer[i].rgbBlue;
@@ -429,12 +440,20 @@ namespace pcl
 					os << "out//clouds//cloud_" << std::setw(4) << std::setfill('0') << imageCount_ << ".pcd";
 					pcl::io::savePCDFile(os.str(), *temp.get(), true);
 					imageCount_++;
+
 				}
 			}
+      /*
+      if (record)
+      {
+        toggleRecord();
+      }
+      */
 		}
-		delete	depth2rgb;
+		delete depth2rgb;
 		delete color2depth;
 		delete camerapoints;
+		
 	}
 
 	pcl::PointCloud<pcl::PointXYZ>::Ptr pcl::Kinect2Grabber::convertDepthToPointXYZ(UINT16* depthBuffer)
@@ -599,4 +618,3 @@ namespace pcl
 }
 
 #endif KINECT2_GRABBER
-
